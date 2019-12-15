@@ -1,0 +1,262 @@
+---
+title: "Project 2: Modeling, Testing, and Predicting"
+author: "Jessica Pak jp53689"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+```
+```{r global_options, include=FALSE}
+#LEAVE THIS CHUNK ALONE!
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+```
+## Introduction
+The dataset I have chosen is the "Arrests" dataset, a built-in R dataset from the "carData" package. The "Arrests" dataset contains data on police treatment of individuals arrested in Toronto for simple possession of small quantities of marijuana. It contains 5226 observations on 8 different variables: released, colour, year, age, sex, employed, citizen, and checks. The released variable is a categorical variable that indicates whether or not the arrestee was released with a summons, the colour variable indicates the arrestee's race, the year variable indicates the year (1997-2002), the age variable indicates the arrestee's age in years, the sex variable indicates whether the arrestee was male or female, the citizen variable indicates whether or not the arrestee was a citizen, and the checks variable represents the number of police data bases on which the arrestee's name appeared. 
+
+## 1. MANOVA
+```{R}
+library(carData)
+man1<-manova(cbind(checks,age)~released, data=Arrests)
+summary(man1)
+
+summary.aov(man1)
+
+pairwise.t.test(Arrests$checks,Arrests$released,
+ p.adj="none")
+
+pairwise.t.test(Arrests$age,Arrests$released,
+ p.adj="none")
+
+1-((1-0.05)^5)
+
+0.05/5
+
+```
+A MANOVA test was performed to check if at least one of my two numeric variables ('checks' and 'age') showed a mean difference across levels of the 'released' variable. Since the result was significant, a univariate ANOVA test was performed to see which of the two variables was/were significant. Post hoc analysis was performed conducting pairwise comparisons. In total, 5 tests were performed (1 MANOVA, 2 ANOVA, 2 t-tests). The probability of at least one Type I error if unadjusted is 0.2262191. There are many assumptions when performing MANOVA tests including random samples, independent observations, multivariate normality of DVs, homogeneity of within-group covariance matrices, linear relationships among DVs, no extreme univariate or multivariate outliers, and no multicollinearity. It is unlikely that all of these assumptions were met. Whether or not the arrestee was released differed significantly in terms of age and checks after adjusting for multiple comparisons (bonferroni).
+
+## 2. Randomization Test
+
+```{R}
+ggplot(Arrests,aes(checks,fill=colour))+geom_histogram(bins=6.5)+facet_wrap(~colour,ncol=2)+theme(legend.position="none")
+Arrests%>%group_by(colour)%>%
+  summarize(means=mean(checks))%>%summarize(`mean_diff:`=diff(means))
+
+rand_dist<-vector()
+
+for(i in 1:5000){
+new<-data.frame(checks=sample(Arrests$checks),colour=Arrests$colour) 
+rand_dist[i]<-mean(new[new$colour=="White",]$checks)-
+              mean(new[new$colour=="Black",]$checks)}
+
+{hist(rand_dist,main="",ylab=""); abline(v = 0.614,col="red")}
+
+mean(rand_dist>0.614)*2
+
+t.test(data=Arrests,checks~colour)
+
+```
+H0: Mean number of checks is the same for "Black" vs. "White" individuals
+HA: Mean number of checks is different for "Black" vs. "White" individuals
+Performing a randomization test on the mean difference in checks between Black and White individuals, resulted in a p-value of 0. An Independent-samples t-test was performed for comparison. The calculated t-statistic was 12.571 and the p-value was <2.2e-16. Based on these results, we are able to conclude that the mean number of checks between "Black" and "White" individuals is significantly different.
+
+## 3. Linear Regression
+```{R}
+library(sandwich)
+library(lmtest)
+Arrests$age_c <- Arrests$age - mean(Arrests$age)
+fit<-lm(checks ~ colour*age_c, data=Arrests)
+summary(fit)
+
+newdat<-Arrests
+newdat$age<-c(seq(0,70,length.out=5225),mean(Arrests$age))
+newdat$colour<-rep("White",length(newdat$colour))
+newdat$pred1<-predict(fit,newdat)
+newdat$colour<-rep("Black",length(newdat$colour))
+newdat$pred2<-predict(fit,newdat)
+newdat$age_c<-Arrests$age_c
+
+ggplot(Arrests, aes(x = age_c, y = checks)) +
+    geom_point() + geom_line(data = newdat, aes(y = pred1),color='blue' ) +
+    geom_line(data = newdat, aes(y = pred2),color='red' )+scale_x_continuous(limits=c(0,45))
+
+resids<-fit$residuals; fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col="red")
+bptest(fit)
+ks.test(resids, "pnorm", sd=sd(resids))
+
+data.frame(resids,fitvals)%>%ggplot(aes(resids,fitvals))+geom_point()+geom_hline(yintercept=0)
+
+summary(fit)$coef
+coeftest(fit, vcov = vcovHC(fit))
+
+fit1<-lm(checks ~ colour+age_c, data=Arrests)
+summary(fit1)
+lrtest(fit, fit1)
+```
+
+The coefficient estimate for 'colourWhite' represents how much the number of checks for 'White' individuals differs from the number of checks for 'Black' individuals when controlling for age. The coefficent estimate for 'age_c' represents how much the number of checks changes for every one unit increase in age when controlling for 'colour'. The coefficient estimate for the interaction term 'colourWhite:age_c' measures how much the effect of colour differs based on the age.
+After performing a linear regression the results display that there is a significant difference in the number of checks for 'White' and 'Black' individuals when controlling for age. In addition, the effect of colour on number of checks differs significantly based on age. On the other hand, when controlling for colour, age does not have a significant effect on the number of checks. Comparing results before and after robust SEs, the coefficient estimates changed very slightly. After robust SEs the standard error increased slightly for the intercept and 'colourWhite' but decreased slightly for 'age_c' and 'colourWhite:age_c.' My model explains 4.7% of the variation of the outcome.
+
+## 4. Bootstrapped Standard Errors.
+```{R}
+samp_distn<-replicate(5000, {
+  boot_dat<-boot_dat<-Arrests[sample(nrow(Arrests),replace=TRUE),]
+  fit2<-lm(checks ~ colour * age_c, data=boot_dat)
+  coef(fit2)
+})
+
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+
+```
+The standard errors for the bootstrapped SEs are all slightly smaller than the original and robust SEs.
+
+
+## 5. Logistic Regression
+
+```{R}
+data<-Arrests%>%transmute(age_c=age_c, colour=colour,year=year,age=age,sex=sex, employed=employed, citizen=citizen, checks=checks, outcome=released,y=as.numeric(outcome=="Yes"))
+
+fit3<-glm(y~sex+checks, family=binomial(link="logit"), data=data)
+coeftest(fit3)
+exp(-0.426471)
+exp(coef(fit3))
+
+prob<-predict(fit3,type="response")
+pred<-ifelse(prob>.5,1,0)
+table(truth=data$y,prediction=pred)%>%addmargins
+
+##Accuracy
+(3+4328)/5226
+
+##Sensitivity (TPR)
+4328/4334
+
+##Specificity (TNR)
+3/892
+
+##PPV
+4328/5217
+
+data$logit<-predict(fit3)
+data$outcome<-factor(data$outcome,levels=c("Yes","No"))
+ggplot(data,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)
+
+library(pROC)
+library(plotROC)
+tdat<-data%>%mutate(prob=predict(fit3,type="response"),prediction=ifelse(prob>0.5,1,0))
+classify<-tdat%>%transmute(prob,prediction,truth=y)
+ROCplot<-ggplot(classify)+geom_roc(aes(d=truth,m=prob),n.cuts=0)
+ROCplot
+calc_auc(ROCplot)
+
+
+set.seed(1234)
+k=10
+data1<-data[sample(nrow(data)),]
+folds<-cut(seq(1:nrow(data)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  train<-data1[folds!=i,]
+  test<-data1[folds==i,]
+  truth<-test$y
+  fit4<-glm(y~sex+checks,data=train,family="binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+
+apply(diags,2,mean)
+
+```
+
+Controlling for checks, the odds of release for males and females are not significantly different.
+Controlling for sex, for every 1-unit increase in checks, the odds of release decrease by a factor of 0.653. The accuracy of my model, the proportion of correctly classified cases is 0.829, the sensitivity, the proportion of releases correctly classified, is 0.999, the specificity, the proportion of not released correctly classified is 0.003, and the PPV, the proportion released who were is 0.830. The area under the curve (AUC) is 0.680, which quantifies how well we are predicting overall. The AUC is pretty low, meaning we are not predicting very well overall. The out-of-sample accuracy is 0.829, sensitivity is 1.000, specificity is 0.000, ppv is 0.829, and auc is 0.408.
+
+## 6. LASSO
+```{R}
+library(glmnet)
+fit5<-lm(checks~., data=Arrests)
+
+y<-as.matrix(Arrests$checks)
+x<-Arrests%>%dplyr::select(year,age)%>%mutate_all(scale)%>%as.matrix
+
+cv<-cv.glmnet(x,y)
+
+lasso1<-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)
+
+set.seed(1234)
+k=10 
+data1<-Arrests[sample(nrow(Arrests)),]
+folds<-cut(seq(1:nrow(Arrests)),breaks=k,labels=F)
+
+diags<-NULL
+for(i in 1:k){
+  train<-data1[folds!=i,]
+  test<-data1[folds==i,]
+  
+  fit6<-lm(checks~age,data=train)
+  yhat<-predict(fit,newdata=test)
+  
+  diags<-mean((test$checks-yhat)^2) 
+}
+mean(diags)
+
+summary(fit5)
+summary(fit6)
+
+```
+The only variable retained is 'age.' After performing a 10-fold CV using this model, the out-of-sample residual standard error is higher than the original residual standard error.
+
+
+

@@ -1,0 +1,1 @@
+"0","ggplot(biopsyMelanoma, aes(x = status, fill=sex))+geom_bar(position=""dodge"",aes(y=thickness), stat = ""summary"", fun.y=""mean"")+ggtitle(""Thickness of Tumours by Status and Sex"")+theme_light()+scale_fill_brewer()"

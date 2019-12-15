@@ -1,0 +1,2 @@
+"0","Arrests%>%group_by(colour)%>%"
+"0","  summarize(means=mean(checks))%>%summarize(`mean_diff:`=diff(means))"

@@ -1,0 +1,54 @@
+---
+title: "Resume"
+author: "Jessica Pak"
+date: "December 15, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Jessica Pak
+### jpak98@gmail.com
+
+## Skills Summary
+
+    -Strong work ethic and willingness to help out in any way possible
+    -Strong understanding of concepts in biology, chemistry, and biotechnology
+    -Leadership and communication skills
+    -Determined and receptive to advice/knowledge
+    -Passionate, driven, and excited to learn and increase experience in the medical field
+
+## Education
+### UNIVERSITY OF CALIFORNIA LOS ANGELES, Los Angeles, CA
+
+    -Undergraduate Psychobiology Major, 2016-2017
+    -GPA: 3.538/4.0
+    -Dean’s Honors List, 2017
+### UNIVERSITY OF TEXAS AT AUSTIN, Austin, TX
+
+    -Undergraduate Biology Major, Current
+    -GPA: 3.835/4.0
+
+## Experience
+### TEXAS HEALTH PRESBYTERIAN HOSPITAL OF DALLAS, Dallas, TX
+
+    -August 2018: 7 hours, Binh Ho, MD, Emergency Medicine
+
+### FRISCO PLASTIC SURGERY & MEDSPA, Frisco, TX
+
+    -August 2018: 6 hours, Ken Smart, MD, Plastic Surgery 
+
+### RONALD REAGAN UCLA MEDICAL CENTER, Los Angeles, CA
+
+    -Volunteer: December 2016-June 2017
+
+
+
+
+
+
+
+
+

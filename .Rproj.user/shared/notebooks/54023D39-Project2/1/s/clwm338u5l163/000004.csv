@@ -1,0 +1,7 @@
+"0",""
+"0","library(pROC)"
+"0","library(plotROC)"
+"0","tdat<-data%>%mutate(prob=predict(fit3,type=""response""),prediction=ifelse(prob>0.5,1,0))"
+"0","classify<-tdat%>%transmute(prob,prediction,truth=y)"
+"0","ROCplot<-ggplot(classify)+geom_roc(aes(d=truth,m=prob),n.cuts=0)"
+"0","ROCplot"

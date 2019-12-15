@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jessica Pak</title>
+    <link>/</link>
+    <description>Recent content on Jessica Pak</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python</title>
+      <link>/blog/python/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python/</guid>
+      <description>Counting K-Mers One interesting topic from Python that I have recently learned is using it to count “k-mers” in a sequence of amino acids. For example, I was able to find the number of 3-mers that appeared in the sequence: my_seq1 = “ATCATCATG” using the following code:
+import re my_seq1 = &amp;quot;ATCATCATG&amp;quot; def count_kmers(read, k): counts = {} num_kmers = len(read) - k + 1 for i in range(num_kmers): kmer = read[i:i+k] if kmer not in counts: counts[kmer] = 0 counts[kmer] += 1 return counts count_kmers(my_seq1,3) The output of this code was:</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects I have been working on:
+  Project 1
+  Project 2
+  </description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>Jessica Pak, jp53689  Data Wrangling and Data Exploration Melanoma&amp;lt;-read.csv(&amp;quot;~/Desktop/Melanoma.csv&amp;quot;) biopsy&amp;lt;-read.csv(&amp;quot;~/Desktop/biopsy.csv&amp;quot;) library(dplyr) ## ## Attaching package: &amp;#39;dplyr&amp;#39; ## The following objects are masked from &amp;#39;package:stats&amp;#39;: ## ## filter, lag ## The following objects are masked from &amp;#39;package:base&amp;#39;: ## ## intersect, setdiff, setequal, union library(tidyverse) ## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.2.1 ── ## ✔ ggplot2 3.2.1 ✔ readr 1.3.1 ## ✔ tibble 2.1.3 ✔ purrr 0.3.2 ## ✔ tidyr 1.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Introduction The dataset I have chosen is the “Arrests” dataset, a built-in R dataset from the “carData” package. The “Arrests” dataset contains data on police treatment of individuals arrested in Toronto for simple possession of small quantities of marijuana. It contains 5226 observations on 8 different variables: released, colour, year, age, sex, employed, citizen, and checks. The released variable is a categorical variable that indicates whether or not the arrestee was released with a summons, the colour variable indicates the arrestee’s race, the year variable indicates the year (1997-2002), the age variable indicates the arrestee’s age in years, the sex variable indicates whether the arrestee was male or female, the citizen variable indicates whether or not the arrestee was a citizen, and the checks variable represents the number of police data bases on which the arrestee’s name appeared.</description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resume/</guid>
+      <description>Jessica Pak jpak98@gmail.com   Skills Summary -Strong work ethic and willingness to help out in any way possible -Strong understanding of concepts in biology, chemistry, and biotechnology -Leadership and communication skills -Determined and receptive to advice/knowledge -Passionate, driven, and excited to learn and increase experience in the medical field  Education UNIVERSITY OF CALIFORNIA LOS ANGELES, Los Angeles, CA -Undergraduate Psychobiology Major, 2016-2017 -GPA: 3.538/4.0 -Dean’s Honors List, 2017  UNIVERSITY OF TEXAS AT AUSTIN, Austin, TX -Undergraduate Biology Major, Current -GPA: 3.</description>
+    </item>
+    
+  </channel>
+</rss>

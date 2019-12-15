@@ -1,0 +1,2 @@
+"0","bm_df<-data.frame(PC1=bm_pca$scores[,1], PC2=bm_pca$scores[,2], PC3=bm_pca$scores[,3])"
+"0","ggplot(bm_df,aes(PC1, PC2))+geom_point()"

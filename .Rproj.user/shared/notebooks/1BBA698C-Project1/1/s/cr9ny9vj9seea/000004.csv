@@ -1,0 +1,4 @@
+"0","Melanoma<-read.csv(""~/Desktop/Melanoma.csv"")"
+"0","biopsy<-read.csv(""~/Desktop/biopsy.csv"")"
+"0","library(dplyr)"
+"0","library(tidyverse)"

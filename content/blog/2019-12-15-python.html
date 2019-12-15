@@ -1,0 +1,33 @@
+---
+title: Python
+author: Jessica Pak
+date: '2019-12-15'
+slug: python
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<div id="counting-k-mers" class="section level2">
+<h2>Counting K-Mers</h2>
+<p>One interesting topic from Python that I have recently learned is using it to count “k-mers” in a sequence of amino acids. For example, I was able to find the number of 3-mers that appeared in the sequence: my_seq1 = “ATCATCATG” using the following code:</p>
+<pre><code>import re
+my_seq1 = &quot;ATCATCATG&quot;
+
+def count_kmers(read, k):
+    counts = {}
+num_kmers = len(read) - k + 1
+for i in range(num_kmers):
+    kmer = read[i:i+k]
+    if kmer not in counts:
+        counts[kmer] = 0
+    counts[kmer] += 1
+return counts
+
+count_kmers(my_seq1,3)</code></pre>
+<p>The output of this code was:</p>
+<pre><code>{&#39;ATC&#39;: 2, &#39;TCA&#39;: 2, &#39;CAT&#39;: 2, &#39;ATG&#39;: 1}</code></pre>
+<p>I found this to be particularly interesting and informative because it provided insight into how bioinformatics are used in research.</p>
+</div>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Jessica Pak</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Jessica Pak</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python</title>
+      <link>/blog/python/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python/</guid>
+      <description>Counting K-Mers One interesting topic from Python that I have recently learned is using it to count “k-mers” in a sequence of amino acids. For example, I was able to find the number of 3-mers that appeared in the sequence: my_seq1 = “ATCATCATG” using the following code:
+import re my_seq1 = &amp;quot;ATCATCATG&amp;quot; def count_kmers(read, k): counts = {} num_kmers = len(read) - k + 1 for i in range(num_kmers): kmer = read[i:i+k] if kmer not in counts: counts[kmer] = 0 counts[kmer] += 1 return counts count_kmers(my_seq1,3) The output of this code was:</description>
+    </item>
+    
+  </channel>
+</rss>

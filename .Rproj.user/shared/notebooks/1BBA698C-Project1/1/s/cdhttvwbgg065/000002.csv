@@ -1,0 +1,2 @@
+"0","Melanoma$thickness<-round(Melanoma$thickness)"
+"0","biopsyMelanoma<-full_join(Melanoma, biopsy, by=c(""thickness""=""V1""))"

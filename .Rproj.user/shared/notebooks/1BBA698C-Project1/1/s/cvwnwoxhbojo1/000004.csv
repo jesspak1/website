@@ -1,0 +1,2 @@
+"0","library(ggplot2)"
+"0","ggplot(biopsyMelanoma, aes(x = class, fill=sex))+geom_bar(position=""dodge"",aes(y=thickness), stat = ""summary"", fun.y=""mean"")+ggtitle(""Thickness of Tumours by Class and Sex"")+theme(axis.text.x = element_text(angle=45, hjust=1))+theme_minimal()+scale_fill_grey()"

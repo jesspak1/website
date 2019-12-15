@@ -1,0 +1,6 @@
+"0","bm_pca$loadings[1:5,1:2]%>%as.data.frame%>%rownames_to_column%>%"
+"0","ggplot()+geom_hline(aes(yintercept=0),lty=2)+"
+"0","  geom_vline(aes(xintercept=0),lty=2)+ylab(""PC2"")+xlab(""PC1"")+"
+"0","  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=""red"")+"
+"0","  geom_label(aes(x=Comp.1*.9,y=Comp.2+.1,label=rowname))"
+"0",""

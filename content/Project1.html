@@ -1,0 +1,199 @@
+---
+title: 'Project 1: Exploratory Data Analysis'
+author: "SDS348 Fall 2019"
+date: "10/20/2019"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document: default
+---
+
+
+
+<div id="jessica-pak-jp53689" class="section level3">
+<h3>Jessica Pak, jp53689</h3>
+</div>
+<div id="data-wrangling-and-data-exploration" class="section level2">
+<h2>Data Wrangling and Data Exploration</h2>
+<pre class="r"><code>Melanoma&lt;-read.csv(&quot;~/Desktop/Melanoma.csv&quot;)
+biopsy&lt;-read.csv(&quot;~/Desktop/biopsy.csv&quot;)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.2.1     ✔ readr   1.3.1
+## ✔ tibble  2.1.3     ✔ purrr   0.3.2
+## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
+## ✔ ggplot2 3.2.1     ✔ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>The two datasets I have chosen are ‘Melanoma’ and ‘biopsy.’ The Melanoma data frame has data on 205 patients in Denmark with malignant melanoma. The variables in this data frame are ‘status,’ which indicates whether the patient died from melanoma(1), is alive(2), or died from other causes(3), ‘sex,’ (1=male,0=female),‘age’ in years, ‘year’, ‘thickness,’ which indicates the thickness of the tumour in mm, and ‘ulcer,’ which indicates the presence (1) or absence (0) of an ulcer. The biopsy data frame contains data from biopsies of breast tumours for 699 patients. The variables it contains are sample code number, clump thickness, uniformity of cell size, uniformity of cell shape, marginal adhesion, single epithelial cell size, bare nuclei, bland chromatin, normal nucleoli, mitoses, and class. The two dataframes share the variable of tumour thickness. The ‘Melanoma dataset was aquired from the R package called ’MASS’ and the ‘aids’ dataset was acquired from the R package called ‘boot.’ These variables are interesting to me because I am interested in cancer research as well as aids research. Using select I removed the X column from both datasets and the X.1 column from the biopsy dataset.</p>
+<pre class="r"><code>Melanoma&lt;-Melanoma%&gt;%
+  select(-X)
+biopsy&lt;-biopsy%&gt;%
+  select(-X)%&gt;%
+  select(-X.1)
+glimpse(Melanoma)</code></pre>
+<pre><code>## Observations: 205
+## Variables: 6
+## $ status    &lt;int&gt; 3, 3, 2, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 1,…
+## $ sex       &lt;int&gt; 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1,…
+## $ age       &lt;int&gt; 76, 56, 41, 71, 52, 28, 77, 60, 49, 68, 53, 64, 68, 63, 14,…
+## $ year      &lt;int&gt; 1972, 1968, 1977, 1968, 1965, 1971, 1972, 1974, 1968, 1971,…
+## $ thickness &lt;dbl&gt; 6.76, 0.65, 1.34, 2.90, 12.08, 4.84, 5.16, 3.22, 12.88, 7.4…
+## $ ulcer     &lt;int&gt; 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</code></pre>
+<pre class="r"><code>glimpse(biopsy)</code></pre>
+<pre><code>## Observations: 699
+## Variables: 11
+## $ ID    &lt;int&gt; 1000025, 1002945, 1015425, 1016277, 1017023, 1017122, 1018099, …
+## $ V1    &lt;int&gt; 5, 5, 3, 6, 4, 8, 1, 2, 2, 4, 1, 2, 5, 1, 8, 7, 4, 4, 10, 6, 7,…
+## $ V2    &lt;int&gt; 1, 4, 1, 8, 1, 10, 1, 1, 1, 2, 1, 1, 3, 1, 7, 4, 1, 1, 7, 1, 3,…
+## $ V3    &lt;int&gt; 1, 4, 1, 8, 1, 10, 1, 2, 1, 1, 1, 1, 3, 1, 5, 6, 1, 1, 7, 1, 2,…
+## $ V4    &lt;int&gt; 1, 5, 1, 1, 3, 8, 1, 1, 1, 1, 1, 1, 3, 1, 10, 4, 1, 1, 6, 1, 10…
+## $ V5    &lt;int&gt; 2, 7, 2, 3, 2, 7, 2, 2, 2, 2, 1, 2, 2, 2, 7, 6, 2, 2, 4, 2, 5, …
+## $ V6    &lt;int&gt; 1, 10, 2, 4, 1, 10, 10, 1, 1, 1, 1, 1, 3, 3, 9, 1, 1, 1, 10, 1,…
+## $ V7    &lt;int&gt; 3, 3, 3, 3, 3, 9, 3, 3, 1, 2, 3, 2, 4, 3, 5, 4, 2, 3, 4, 3, 5, …
+## $ V8    &lt;int&gt; 1, 2, 1, 7, 1, 7, 1, 1, 1, 1, 1, 1, 4, 1, 5, 3, 1, 1, 1, 1, 4, …
+## $ V9    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1, 4, 1, 1, 1, 2, 1, 4, …
+## $ class &lt;fct&gt; benign, benign, benign, benign, benign, malignant, benign, beni…</code></pre>
+</div>
+<div id="tidying-spreadgather" class="section level3">
+<h3>Tidying: Spread/Gather</h3>
+<p>Since my datasets were already tidy, I used spread() to untidy the Melanoma dataset and gather() to retidy it. I created a new dataset for the called ‘Melwide’ using the spread() function. Then I created another new dataset called ‘Mellong’ using the gather() function.</p>
+<pre class="r"><code>Melwide&lt;-Melanoma%&gt;%
+  spread(key=&quot;sex&quot;, value=&quot;status&quot;)
+Mellong&lt;-Melwide%&gt;%
+  gather(5:6,key = &quot;sex&quot;, value = &quot;status&quot;, na.rm = T)</code></pre>
+</div>
+<div id="joiningmerging" class="section level3">
+<h3>Joining/Merging</h3>
+<p>The Melanoma dataset contains a variable for thickness, however in order for the values to match the values for thickness in the biopsy dataset, I rounded the thickness values in the Melanoma dataset. I then used a full join. No cases in either dataset were dropped. My reason for using full join was to ensure that the ‘class’ variable from the biopsy dataset was not dropped. I will be removing the other unneccessary variables from the biopsy dataset later.</p>
+<pre class="r"><code>Melanoma$thickness&lt;-round(Melanoma$thickness)
+biopsyMelanoma&lt;-full_join(Melanoma, biopsy, by=c(&quot;thickness&quot;=&quot;V1&quot;))</code></pre>
+</div>
+<div id="wrangling" class="section level3">
+<h3>Wrangling</h3>
+<p>Using the joined biopsyMelanoma dataset, I first removed rows with the value ‘3’ in the ‘status’ variable because 3 indicates death by other causes. Then I changed the catagorical variable ‘sex’ to Male and Female, changed the catagorical variable ‘status’ to Died and Alive, and changed the catagorical variable ‘ulcer’ to present and absent. Then I used filter to remove the rows with NAs from the ‘class’ variable. Then I removed 8 more variables that using select. Next I used arrange to arrange the rows by age. I used mutate to create a new variable to visualize the clump thickness compared to single epithelial cell size (V5).</p>
+<p>Then I used group_by to group the rows by sex and status, and using summarize I calculated the mean age and standard deviation of single epithelial cell size for sex and status. Using group_by again, I grouped the rows by status and using n_distinct counted the number of distinct years for people who were alive and dead. Next I grouped the rows by class and using summarize found the average thickness for benign and malignant tumours. I grouped by ulcer and found the median of the new variable I created (tumour thickness divided by single epithelial cell size) for the presence and absence of a tumour. Then I grouped by status and found the maximum thickness for alive and dead. Grouping by status, I found the minimum age of patients who are alive and dead. Grouping by sex, I found the mean age of male and female patients. Grouping by status, I found the maximum age of patients who are alive and dead. Grouping by status, I found the total number of males and females who are alive and dead.</p>
+<pre class="r"><code>biopsyMelanoma&lt;-biopsyMelanoma[biopsyMelanoma$status!=3,]
+
+biopsyMelanoma$sex[biopsyMelanoma$sex==1] &lt;- &quot;Male&quot;
+biopsyMelanoma$sex[biopsyMelanoma$sex==0] &lt;- &quot;Female&quot;
+biopsyMelanoma$status[biopsyMelanoma$status==1]&lt;- &quot;Died&quot;
+biopsyMelanoma$status[biopsyMelanoma$status==2]&lt;- &quot;Alive&quot;
+biopsyMelanoma$status[biopsyMelanoma$status==3]&lt;- &quot;Other Causes&quot;
+biopsyMelanoma$ulcer[biopsyMelanoma$ulcer==1]&lt;-&quot;present&quot;
+biopsyMelanoma$ulcer[biopsyMelanoma$ulcer==0]&lt;-&quot;absent&quot;
+
+biopsyMelanoma&lt;-biopsyMelanoma%&gt;%
+  filter((!is.na(class)))%&gt;%
+  select(-ID,-V2,-V3,-V4,-V6,-V7,-V8,-V9)%&gt;%
+  arrange(age)%&gt;%
+  mutate(tumour=thickness/V5)
+
+sexstatusagev5&lt;-biopsyMelanoma%&gt;%
+  group_by(sex,status)%&gt;%
+  summarize(avgage=mean(age, na.rm = T), sdv5=sd(V5, na.rm = T))
+            
+statusyeardistinct&lt;-biopsyMelanoma%&gt;%
+  group_by(status)%&gt;%
+  summarize(nyeardist=n_distinct(year, na.rm = T))
+
+classthickness&lt;-biopsyMelanoma%&gt;%
+  group_by(class)%&gt;%
+  summarize(meanthickness=mean(thickness, na.rm=T))
+
+ulcertumour&lt;-biopsyMelanoma%&gt;%
+  group_by(ulcer)%&gt;%
+  summarize(medtumour=median(tumour, na.rm = T))
+
+statusthickness&lt;-biopsyMelanoma%&gt;%
+  group_by(status)%&gt;%
+  summarize(maxthickness=max(thickness, na.rm = T))
+
+minstatusage&lt;- biopsyMelanoma%&gt;%
+  group_by(status)%&gt;%
+  summarize(minage=min(age, na.rm = T))
+
+sexavgv5&lt;-biopsyMelanoma%&gt;%
+  group_by(sex)%&gt;%
+  summarize(meanage=mean(age, na.rm = T))
+
+maxstatusage&lt;-biopsyMelanoma%&gt;%
+  group_by(status)%&gt;%
+  summarize(maxage=max(age, na.rm = T))
+
+nstatussex&lt;-biopsyMelanoma%&gt;%
+  group_by(status)%&gt;%
+  count(sex)</code></pre>
+</div>
+<div id="visualizing" class="section level3">
+<h3>Visualizing</h3>
+<p>The first plot I created is a barplot that shows the thickness of tumours that are benign and malignant for males and females. For both males and females, on average, thicker tumours were malignant and less thick tumours were benign.</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(biopsyMelanoma, aes(x = class, fill=sex))+geom_bar(position=&quot;dodge&quot;,aes(y=thickness), stat = &quot;summary&quot;, fun.y=&quot;mean&quot;)+ggtitle(&quot;Thickness of Tumours by Class and Sex&quot;)+theme(axis.text.x = element_text(angle=45, hjust=1))+theme_minimal()+scale_fill_grey()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The second plot I created is a barplot that shows the thickness of tumours for patients who are alive and dead for males and females. For both males and females, on average, patients with thicker tumours are dead and patients with less thick tumours are alive.</p>
+<pre class="r"><code>ggplot(biopsyMelanoma, aes(x = status, fill=sex))+geom_bar(position=&quot;dodge&quot;,aes(y=thickness), stat = &quot;summary&quot;, fun.y=&quot;mean&quot;)+ggtitle(&quot;Thickness of Tumours by Status and Sex&quot;)+theme_light()+scale_fill_brewer()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="dimensionality-reduction" class="section level3">
+<h3>Dimensionality Reduction</h3>
+<pre class="r"><code>bm_nums&lt;-biopsyMelanoma%&gt;%select_if(is.numeric)%&gt;%scale
+rownames(bm_nums)&lt;-biopsyMelanoma$Name
+bm_pca&lt;-princomp(bm_nums)
+names(bm_pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;   &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(bm_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2   Comp.3    Comp.4     Comp.5
+## Standard deviation     1.3848344 1.0911928 1.055823 0.8292521 0.29800896
+## Proportion of Variance 0.3835763 0.2381547 0.222966 0.1375401 0.01776294
+## Cumulative Proportion  0.3835763 0.6217310 0.844697 0.9822371 1.00000000
+## 
+## Loadings:
+##           Comp.1 Comp.2 Comp.3 Comp.4 Comp.5
+## age        0.399  0.285  0.422  0.763       
+## year              0.442  0.708 -0.551       
+## thickness  0.675        -0.196 -0.252 -0.665
+## V5         0.207  0.711 -0.515         0.423
+## tumour     0.586 -0.467  0.133 -0.207  0.615</code></pre>
+<pre class="r"><code>eigval&lt;-bm_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+ggplot()+geom_bar(aes(y=varprop,x=1:5),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:5))+
+  geom_text(aes(x=1:5,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+  scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+  scale_x_continuous(breaks=1:10)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>##     Comp.1     Comp.2     Comp.3     Comp.4     Comp.5 
+## 1.91776637 1.19070181 1.11476289 0.68765898 0.08880934</code></pre>
+<pre class="r"><code>bm_df&lt;-data.frame(PC1=bm_pca$scores[,1], PC2=bm_pca$scores[,2], PC3=bm_pca$scores[,3])
+ggplot(bm_df,aes(PC1, PC2))+geom_point()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(bm_df,aes(PC2, PC3))+geom_point()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(bm_df,aes(PC1, PC3))+geom_point()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<pre class="r"><code>bm_pca$loadings[1:5,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+  geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+  geom_label(aes(x=Comp.1*.9,y=Comp.2+.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>With the full biopsyMelanoma dataset I cleaned the data by grabing all numerics. Then I normalized the data (scaled to mean=0, sd=1). Then I ran princomp() on the scaled data. To decide how many components to keep, I plotred the proportion of variance explained by each principal component (from largest eigenvalue to smallest). I did this by squaring to convert SDs to eigenvalues, then finding the proportion of var explained by each PC. After running ‘eigval’ I decided to only keep Comp.1, Comp.2, and Comp.3 because these are the PCs whose eigenvalues are greater than 1. According to the results, PC1 seems to be a general unwellness factor since all events load positively on this component. PC2 seems to indicate age,tumour thickness, and single epithelial cell size vs. thickness/single epithelial cell size. PC3; seems to indicate year, age, and thickness/epithelial cell size vs. thickness and single epithelial cell size. PC1, PC2, and PC3 account for 84% of the total variance. 3 PCs have eigen values greater than 1. Year is slightly negatively correlated with other variables (which makes sense). However, age, single epithelial cell size, thickness, and tumour are all positively correlated.</p>
+</div>
+</div>

@@ -1,0 +1,1 @@
+"0","ggplot(Arrests,aes(checks,fill=colour))+geom_histogram(bins=6.5)+facet_wrap(~colour,ncol=2)+theme(legend.position=""none"")"
